@@ -12,7 +12,7 @@ tree::tree(int number)
     counter=1;
 }
 
-node* tree::find_parent_node(int number,node *present_node) //present_node is at the beginning of the root of the whole tree
+node* tree::find_parent_node(int number,node *present_node) //present_node is at the beginning the root of the whole tree
 {
     if(present_node->value==number) return present_node;
 
@@ -31,7 +31,7 @@ node* tree::find_parent_node(int number,node *present_node) //present_node is at
     return present_node;
 }
 
-void tree::add_node(int number)
+void tree::add_node(int number)//adds value to tree
 {
     node *temp=find_parent_node(number,root);
 
@@ -62,7 +62,7 @@ node* find_node(int number,node* node) //function looks for a node with the same
     return nullptr;
 }
 
-int tree::get_size(node *node)
+int tree::get_size(node *node) // calculates the number of nodes below the given node +1, not used in project
 {
     int size_tree = 1;
     if(!node) return 0;
@@ -72,20 +72,10 @@ int tree::get_size(node *node)
 
 }
 
-vector <int> copy_to_vector(node* node)//copies all values from nodes under called parent node
-{
-    if(!node) return vector<int>();
-    vector <int> tab;
-    tab.push_back(node->value);
-    if(!node->left_leaf) copy_to_vector(node->left_leaf);
-    if(!node->right_leaf) copy_to_vector(node->right_leaf);
-    tab.erase(tab.begin()); //erases the value from the node that we want to erase as we don't want to insert it into the tree
-    return tab;
-
-}
 
 
-void tree::destroy_tree(node* node)
+
+void tree::destroy_tree(node* node) //deletes the given node and all below it
 {
     if(node)
     {
@@ -98,7 +88,7 @@ void tree::destroy_tree(node* node)
 {
     node* temp=given_node;
 
-    /* loop down to find the leftmost leaf */
+    // loop down to find the leftmost leaf
     while (temp->left_leaf != NULL) temp = temp->left_leaf;
 
     return temp;
@@ -151,6 +141,7 @@ node* tree::remove_node( node* root, int number)
         // Delete the inorder successor
         root->right_leaf = remove_node(root->right_leaf, temp->value);
     }
+    counter--;
     return root;
 
 }
@@ -161,7 +152,7 @@ int tree::get_lenght(node* node) // gets the lenght of the longest branch
     return 1+max(get_lenght(node->left_leaf),get_lenght(node->right_leaf));
 
 }
-bool tree::check_if_member(int number)
+bool tree::check_if_member(int number) // checks if given value is in the tree
 {
     if(find_node(number,root)) return 1;
     else return 0;
@@ -179,7 +170,49 @@ int tree::get_value(int number) // the same as the method above, but returns val
     if(temp) return temp->value;
     return -1;
 }
-/*int get_size_tree(node* node)
+void tree::print_tree(node* node)//  prints all values from trees ascending
+{
+    if(!node) return;
+    print_tree(node->left_leaf);
+    cout<<node->value<<" ";
+    print_tree(node->right_leaf);
+}
+void tree::add_trees(node* node) // adds a tree to the current tree (adds only those values that haven't been already in the tree)
+{
+    if(!node) return;
+    if(check_if_member(node->value)==0) add_node(node->value);
+    add_trees(node->left_leaf);
+    add_trees(node->right_leaf);
+
+}
+void tree::substract_trees(node* node)//remove from the current tree nodes that are both in current tree and in the given one
+{
+    if(!node) return;
+    substract_trees(node->left_leaf);
+    if(check_if_member(node->value)==1) remove_node(root,node->value);
+    substract_trees(node->right_leaf);
+
+}
+bool tree::compare_nodes(node* current,node* compared)
 {
 
-}*/
+    if(!current && !compared) return true;
+    else if(current && compared) return (current->value==compared->value
+                                         &&compare_nodes(current->left_leaf,compared->left_leaf)
+                                         &&compare_nodes(current->right_leaf,compared->right_leaf));
+    else return false;
+
+
+}
+
+bool tree::compare_trees(tree* temp)//checks if to trees are exactly the same
+{
+    //if(counter!=temp->counter) return false;
+   // if(get_lenght(root)!=temp->get_lenght(temp->root)) return false;
+    if(true==compare_nodes(root,temp->root)) return true;
+    else return false;
+
+
+
+}
+
